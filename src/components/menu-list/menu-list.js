@@ -1,15 +1,18 @@
 import React, {Component} from 'react';
 import MenuListItem from '../menu-list-item';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import WithRestoService from '../hoc';
-import {menuLoaded, menuRequsted, menuError} from '../../actions';
+import {menuLoaded, menuRequested, menuError} from '../../actions';
 import Spinner from '../spinner';
 import Error from '../error';
 
 import './menu-list.scss';
 
 class MenuList extends Component {
+
     componentDidMount() {
+        this.props.menuRequested();
+
         const {RestoService} = this.props;
         RestoService.getMenuItems()
             .then(res => this.props.menuLoaded(res))
@@ -17,32 +20,26 @@ class MenuList extends Component {
     }
 
     render() {
-
         const {menuItems, loading, error} = this.props;
-
-        if (error) {
+        if (error){
             return <Error/>
         }
-
         if (loading) {
             return <Spinner/>
         }
-
-
+        const items = menuItems.map(menuItem => {
+                return (
+                    <MenuListItem key = {menuItem.id} menuItem = {menuItem}/>
+                )
+            })
 
         return (
-            <ul className="menu__list">
-                {
-                    menuItems.map(menuItem => {
-                        return <MenuListItem key = {menuItem.id} menuItem = {menuItem}/>
-                    })
-                }
-            </ul>
-        )
+            <View items = {items}/> 
+            )
     }
 };
 
-const mapStateToProps = (state) => {
+const mapStateToProps =  (state) =>{
     return {
         menuItems: state.menu,
         loading: state.loading,
@@ -50,10 +47,21 @@ const mapStateToProps = (state) => {
     }
 }
 
+
 const mapDispatchToProps = {
-    menuLoaded,
-    menuRequsted,
+    menuLoaded: menuLoaded,
+    menuRequested,
     menuError
 }
 
-export default WithRestoService()(connect(mapStateToProps, mapDispatchToProps)(MenuList));
+
+const View = ({items}) => {
+
+    return (
+        <ul className="menu__list">
+            {items}
+        </ul>
+    ) 
+}
+
+export default WithRestoService ()( connect(mapStateToProps, mapDispatchToProps)(MenuList) );
