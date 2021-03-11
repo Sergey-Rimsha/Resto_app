@@ -10,8 +10,14 @@ const menuRequsted = () => {
         type: 'MENU_REQUESTED'
     };
 };
+const menuError = () => {
+    return {
+        type: 'MENU_ERROR'
+    };
+};
 
 export {
     menuLoaded,
-    menuRequsted
+    menuRequsted,
+    menuError
 };
